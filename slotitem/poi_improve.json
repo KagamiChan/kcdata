@@ -8,21 +8,32 @@
     "improvement": [{% for improve in slotitem.data.improvement %}
       {
         "upgrade": {% if improve.upgrade %}{
+          "id": {{ improve.upgrade.id }},
           "level": {{ improve.upgrade.level }},
           "name": "{% include helper/slotitem_finder.md id=improve.upgrade.id result="name" %}",
           "icon": {% include helper/slotitem_finder.md id=improve.upgrade.id result="type[3]" %}
         }{% else %}{
           "level": 0,
           "name": "",
-          "icon": 0
+          "icon": 0,
+          "id": 0
         }{% endif %},
         "req": [{% capture improve_group %}{% include poi_improve/translate_day.md data=improve.day %}{% endcapture %}{% capture improve_group %}{% include poi_improve/group_day.md data=improve_group %}{% endcapture %}{% assign improve_group = improve_group | split: ";" %}{% for group in improve_group %}{% assign str = group | split: ":" %}
           {
             "day": [{% assign days = str[0] | split: "" %}{% for day in days %}
               {% if day == "1" %}true{% else %}false{% endif %}{% unless forloop.last %},{% endunless %}{% endfor %}
             ],
-            "secretary": [{% assign ships = str[1] | split: "," %}{% for ship in ships %}
-              "{% if ship == "0" %}None{% else %}{% include helper/ship_finder.md id=ship result="name" %}{%endif%}"{% unless forloop.last %},{% endunless %}{% endfor %}
+            "secretary": [{% assign ships = str[1] | split: "," %}{% for ship in ships %}{% if ship == "0" %}
+            {
+              "id": 0,
+              "sortNumber": 0,
+              "name": ""
+            }{% else %}
+            {
+              "id": {{ ship }},
+              "sortNumber": {% include helper/ship_finder.md id=ship result="sort_no" %},
+              "name": "{% include helper/ship_finder.md id=ship result="name" %}"
+            }{%endif%}{% unless forloop.last %},{% endunless %}{% endfor %}
             ]
           }{% unless forloop.last %},{% endunless %}{% endfor %}
         ],
@@ -42,6 +53,7 @@
                 {{ improve.consume.useitem[0][1].amount[1] }}
               ],
               "item": {
+                "id": {% if improve.consume.slotitem[0] %}{{ improve.consume.slotitem[0].id }}{% else %}0{% endif %},
                 "icon": {% if improve.consume.slotitem[0] %}{% capture qid %}{{ improve.consume.slotitem[0].id }}{% endcapture %}{% include helper/slotitem_finder.md id=qid result="type[3]" %}{% else %}0{% endif %},
                 "name": "{% if improve.consume.slotitem[0] %}{% capture qid %}{{ improve.consume.slotitem[0].id }}{% endcapture %}{% include helper/slotitem_finder.md id=qid result="name" %}{% endif %}",
                 "count": {% if improve.consume.slotitem[0] %}{{ improve.consume.slotitem[0].amount }}{% else %}0{% endif %}
@@ -57,6 +69,7 @@
                 {{ improve.consume.useitem[1][1].amount[1] }}
               ],
               "item": {
+                "id": {% if improve.consume.slotitem[1] %}{{ improve.consume.slotitem[1].id }}{% else %}0{% endif %},
                 "icon": {% if improve.consume.slotitem[1] %}{% capture qid %}{{ improve.consume.slotitem[1].id }}{% endcapture %}{% include helper/slotitem_finder.md id=qid result="type[3]" %}{% else %}0{% endif %},
                 "name": "{% if improve.consume.slotitem[1] %}{% capture qid %}{{ improve.consume.slotitem[1].id }}{% endcapture %}{% include helper/slotitem_finder.md id=qid result="name" %}{% endif %}",
                 "count": {% if improve.consume.slotitem[1] %}{{ improve.consume.slotitem[1].amount }}{% else %}0{% endif %}
@@ -72,11 +85,13 @@
                 {{ improve.upgrade.consume.useitem[1].amount[1] }}
               ],
               "item": {
+                "id": {% if improve.upgrade.consume.slotitem %}{{ improve.upgrade.consume.slotitem.id }}{% else %}0{% endif %},
                 "icon": {% if improve.upgrade.consume.slotitem %}{% capture qid %}{{ improve.upgrade.consume.slotitem.id }}{% endcapture %}{% include helper/slotitem_finder.md id=qid result="type[3]" %}{% else %}0{% endif %},
                 "name": "{% if improve.upgrade.consume.slotitem %}{% capture qid %}{{ improve.upgrade.consume.slotitem.id }}{% endcapture %}{% include helper/slotitem_finder.md id=qid result="name" %}{% endif %}",
                 "count": {% if improve.upgrade.consume.slotitem %}{{ improve.upgrade.consume.slotitem.amount }}{% else %}0{% endif %}
               },
               "useitem": {
+                "id": {% if improve.upgrade.consume.useitem[2] %}{{ improve.upgrade.consume.useitem[2].id }}{% else %}0{% endif %},
                 "icon": {% if improve.upgrade.consume.useitem[2] %}{{ improve.upgrade.consume.useitem[2].id }}{% else %}0{% endif %},
                 "name": "{% if improve.upgrade.consume.useitem[2] %}{% capture qid %}{{ improve.upgrade.consume.useitem[2].id }}{% endcapture %}{% include helper/useitem_finder.md id=qid result="name" %}{% endif %}",
                 "count": {% if improve.upgrade.consume.useitem[2] %}{{ improve.upgrade.consume.useitem[2].amount }}{% else %}0{% endif %}
@@ -91,11 +106,13 @@
                 0
               ],
               "item": {
+                "id": 0,
                 "icon": 0,
                 "name": "",
                 "count": 0
               },
               "useitem": {
+                "id": 0,
                 "icon": 0,
                 "name": "",
                 "count": 0
